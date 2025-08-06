@@ -13,10 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Curso {
-  id String @id @default(uuid())
-  nome String
-  descricao String?
-  cargaHoraria Int
-  valor Int?
+model Course {
+  id         String   @id @default(uuid())
+  name       String
+  descripton String?
+  workload   Int
+  price      Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
