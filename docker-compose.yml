@@ -1,0 +1,15 @@
+services:
+
+  postgres:
+    image: postgres # a imagem e o que meu conteine vai ter instalado 
+    container_name: introducaodockerdb # nome do conteine 
+    env_file: .env
+    environment: # variabel de ambiente 
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: # porta do conteine 
+      - "${PORT_DB}:5432" # nomero da porta de entrada e saida 
+#a porta da esquerda 5432 se der erro pode ser mudada, ja a porta da direita :5432 e padrão
+
+    
