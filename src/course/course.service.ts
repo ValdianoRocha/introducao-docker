@@ -16,6 +16,10 @@ export class CursosService {
                 descripton: data.description,
                 workload: data.workload,
                 price: data.price
+            },
+            omit: {
+                createdAt: true,
+                updatedAt: true,
             }
         })
     }
@@ -38,7 +42,7 @@ export class CursosService {
     }
 
 
-    async updadeCourse(id: string, data: UpdateCourseDto) {
+    async updateCourse(id: string, data: UpdateCourseDto) {
         return this.prisma.course.update({
             where: { id },
             data: {
@@ -47,18 +51,19 @@ export class CursosService {
                 workload: data.workload,
                 price: data.price,
             },
+            omit: {
+                createdAt: true,
+                updatedAt: true,
+            }
         })
     }
 
 
-    async deletCourse(id: string) {
+    async deleteCourse(id: string) {
         const course = this.prisma.course.delete({
             where: { id },
-            select: {
-                name: true
-            }
         })
 
-        return `O curso ${course} foi apagado com sucesso!`
+        return `O curso de ID: ${(await course).id} - "${(await course).name}" foi apagado com sucesso!`
     }
 }
