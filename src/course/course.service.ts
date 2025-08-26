@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { courseDto } from './Dto/create-course.dto';
+import { CreateCourseDto } from './Dto/create-course.dto';
 import { UpdateCourseDto } from './Dto/update-course.dto';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class CourseService {
         private prisma: PrismaService
     ) { }
 
-    async newCourse(data: courseDto) {
+    async newCourse(data: CreateCourseDto) {
         return await this.prisma.course.create({
             data: {
                 name: data.name,

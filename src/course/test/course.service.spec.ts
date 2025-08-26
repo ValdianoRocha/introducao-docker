@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing"
 import { PrismaService } from "../../prisma/prisma.service"
 import { CourseService } from "../course.service";
 import { Course } from "@prisma/client";
-import { courseDto } from "../Dto/create-course.dto";
+import { CreateCourseDto } from "../Dto/create-course.dto";
 import { NotFoundException } from "@nestjs/common";
 import { UpdateCourseDto } from "../Dto/update-course.dto";
 
@@ -57,7 +57,7 @@ describe("CourseService", () => {
 
     // Teste de criação
     it("deve criar um curso com sucesso", async () => {
-        const dto: courseDto = {
+        const dto: CreateCourseDto = {
             name: "Java",
             description: "Domine Java: a linguagem que roda de geladeira a satélite, faz você entender herança melhor que em reunião de família e ainda ensina a nunca mais viver sem um café por perto.",
             workload: 60,
