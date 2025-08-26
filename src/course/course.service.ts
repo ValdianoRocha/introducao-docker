@@ -13,13 +13,9 @@ export class CursosService {
         return this.prisma.course.create({
             data: {
                 name: data.name,
-                descripton: data.description,
+                description: data.description,
                 workload: data.workload,
                 price: data.price
-            },
-            omit: {
-                createdAt: true,
-                updatedAt: true,
             }
         })
     }
@@ -47,7 +43,7 @@ export class CursosService {
             where: { id },
             data: {
                 name: data.name,
-                descripton: data.description,
+                description: data.description,
                 workload: data.workload,
                 price: data.price,
             },
