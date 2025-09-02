@@ -21,7 +21,15 @@ async function bootstrap() {
     .setTitle('Minha API')
     .setDescription('Documentação da API em que estamos estudando Docker e NestJS.')
     .setVersion('1.0')
-    .build();
+    .addBasicAuth({   // REPRESENTA OS CAMPOS AUTENTICADOS
+      // esquema jwt bearer
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      in: 'heaher'
+    })
+    .build()
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
