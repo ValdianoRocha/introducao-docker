@@ -25,7 +25,7 @@ const dataCourse: Course[] = [
         createdAt: new Date(),
         updatedAt: new Date(),
     }
-]
+];
 
 const mockPrisma = {
     course: {
@@ -35,164 +35,152 @@ const mockPrisma = {
         update: jest.fn(),
         delete: jest.fn(),
     }
-}
+};
 
 describe("CourseService", () => {
-    let service: CourseService
+    let service: CourseService;
 
     beforeEach(async () => {
+        jest.clearAllMocks();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 CourseService,
-                {
-                    provide: PrismaService,
-                    useValue: mockPrisma,
-                },
+                { provide: PrismaService, useValue: mockPrisma },
             ],
-        }).compile()
+        }).compile();
 
         service = module.get<CourseService>(CourseService);
-        jest.clearAllMocks(); // limpa mocks antes de cada teste
     });
 
-    // Teste de criação
-    it("deve criar um curso com sucesso", async () => {
-        const dto: CreateCourseDto = {
-            name: "Java",
-            description: "Domine Java: a linguagem que roda de geladeira a satélite, faz você entender herança melhor que em reunião de família e ainda ensina a nunca mais viver sem um café por perto.",
-            workload: 60,
-            price: 180,
-        }
 
-        mockPrisma.course.create.mockResolvedValue(dataCourse[0])
+    describe('newCourse', () => {
+        it("deve criar um curso com sucesso", async () => {
+            const dto: CreateCourseDto = {
+                name: "Java",
+                description: "Descrição do curso",
+                workload: 60,
+                price: 180,
+            };
 
-        const result = await service.newCourse(dto)
+            mockPrisma.course.create.mockResolvedValue(dataCourse[0]); //aqui eu chamo o mokc de prisma e digo o que o create deve resposta/retorno
 
-        expect(result).toEqual(dataCourse[0])
-        expect(mockPrisma.course.create).toHaveBeenCalledWith({ data: dto })
-    })
+            const result = await service.newCourse(dto); // aqui eu estou chamando o service.newcouse e dando pra ele o que ele é para trabalhar
 
-    // Testa mostrar todos os cursos 
-    it("deve retornar todos os cursos", async () => {
-        mockPrisma.course.findMany.mockResolvedValue(dataCourse)
+            expect(result).toEqual(dataCourse[0]); // aqui eu espero que o resultado do service e o que espero que seja, no caso o datacouse
+            expect(mockPrisma.course.create).toHaveBeenCalledWith({ data: dto }); // aqui eu espero a função create de prisma seja chamada e que consiga trabalhar com a informação que dei 
+        });
+    });
 
-        const result = await service.allCourses()
 
-        expect(result).toEqual(dataCourse)
-        expect(mockPrisma.course.findMany).toHaveBeenCalled()
-    })
+    describe('allCourses', () => {
+        it("deve retornar todos os cursos", async () => {
+            mockPrisma.course.findMany.mockResolvedValue(dataCourse);//aqui eu chamo o mokc de prisma e digo o que o findMany deve resposta/retorno
 
-    // Testa encontrar um curso pelo id bem-sucedida
-    it("deve encontrar um curso pelo ID", async () => {
-        const id = "123"
+            const result = await service.allCourses();// aqui eu estou chamando o service.allCouses e dando pra ele o que ele é para trabalhar
 
-        mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0]);
+            expect(result).toEqual(dataCourse);// aqui eu espero que o resultado do service e o que espero que seja, no caso o datacouse
+            expect(mockPrisma.course.findMany).toHaveBeenCalled();// aqui eu espero a função findMany de prisma seja chamada e que consiga trabalhar com a informação que dei 
+        });
+    });
 
-        const result = await service.oneCourse(id)
 
-        expect(result).toEqual(dataCourse[0])
-        expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } })
-    })
+    describe('oneCourse', () => {
+        it("deve encontrar um curso pelo ID", async () => {
+            const id = "123";
+            mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0]);
 
-    // Testa falha ao encontrar por id
-    it("deve lançar erro se não encontrar o curso por ID", async () => {
-        mockPrisma.course.findUnique.mockResolvedValue(null)
+            const result = await service.oneCourse(id);
 
-        await expect(service.oneCourse("id-invalido"))
-            .rejects
-            .toThrow(NotFoundException)
-    })
+            expect(result).toEqual(dataCourse[0]);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } });
+        });
 
-    // Testa encontrar curso pelo nome 
-    it("deve encontrar um curso pelo nome (case insensitive, contém)", async () => {
-        const name = "java"
+        it("deve lançar erro se não encontrar o curso por ID", async () => {
+            mockPrisma.course.findUnique.mockResolvedValue(null);
 
-        mockPrisma.course.findMany.mockResolvedValue(dataCourse)
+            await expect(service.oneCourse("id-invalido")).rejects.toThrow(NotFoundException);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id: "id-invalido" } });
+        });
+    });
 
-        const result = await service.findCourseByName(name)
 
-        expect(result).toEqual(dataCourse)
-        expect(mockPrisma.course.findMany).toHaveBeenCalledWith({
-            where: {
-                name: {
-                    contains: name,
-                    mode: "insensitive"
+    describe('findCourseByName', () => {
+        it("deve encontrar um curso pelo nome (case insensitive, contém)", async () => {
+            const name = "java";
+            mockPrisma.course.findMany.mockResolvedValue([dataCourse[0]]);
+
+            const result = await service.findCourseByName(name);
+
+            expect(result).toEqual([dataCourse[0]]);
+            expect(mockPrisma.course.findMany).toHaveBeenCalledWith({
+                where: {
+                    name: {
+                        contains: name,
+                        mode: "insensitive"
+                    }
                 }
-            }
-        })
-    })
+            });
+        });
 
-    // Testa falha ao procurar por nome
-    it("deve lançar erro se não encontrar curso pelo nome", async () => {
-        mockPrisma.course.findMany.mockResolvedValue([])
+        it("deve lançar erro se não encontrar curso pelo nome", async () => {
+            mockPrisma.course.findMany.mockResolvedValue([]);
 
-        await expect(service.findCourseByName("inexistente"))
-            .rejects
-            .toThrow(NotFoundException)
-    })
+            await expect(service.findCourseByName("Nao-Existe")).rejects.toThrow(NotFoundException);
+            expect(mockPrisma.course.findMany).toHaveBeenCalled();
+        });
+    });
 
-    // Teste para atualizar um curso
-    it("deve atualizar um curso existente", async () => {
-        const id = "123"
-        const updateCourse: UpdateCourseDto = {
+
+    describe('updateCourse', () => {
+        const id = "123";
+        const updateDto: UpdateCourseDto = {
             name: "Java Avançado",
             description: "Curso atualizado",
             price: 200,
             workload: 80
-        }
-        const updated = {
-            ...dataCourse[0],
-            ...updateCourse
-        }
+        };
 
-        mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0])
-        mockPrisma.course.update.mockResolvedValue(updated)
+        it("deve atualizar um curso existente", async () => {
+            const updated = { ...dataCourse[0], ...updateDto };
 
-        const resultUpdate = await service.updateCourse(id, updateCourse)
+            mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0]);
+            mockPrisma.course.update.mockResolvedValue(updated);
 
-        expect(resultUpdate).toEqual(updated)
-        expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } })
-        expect(mockPrisma.course.update).toHaveBeenCalledWith({
-            where: { id },
-            data: updateCourse,
-        })
-    })
+            const result = await service.updateCourse(id, updateDto);
 
-    // Testa erro ao atualizar curso inexistente
-    it("deve lançar erro se tentar atualizar curso inexistente", async () => {
-        const updateCourse: UpdateCourseDto = {
-            name: "Java",
-            description: "Curso inexistente",
-            price: 0,
-            workload: 0
-        }
-        mockPrisma.course.findUnique.mockResolvedValue(null)
+            expect(result).toEqual(updated);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } });
+            expect(mockPrisma.course.update).toHaveBeenCalledWith({ where: { id }, data: updateDto });
+        });
 
-        await expect(service.updateCourse("id-invalido", updateCourse))
-            .rejects
-            .toThrow(NotFoundException)
-    })
+        it("deve lançar erro se tentar atualizar curso inexistente", async () => {
+            mockPrisma.course.findUnique.mockResolvedValue(null);
 
-    // Testa excluir um curso
-    it("deve excluir um curso com sucesso", async () => {
-        const id = "123"
+            await expect(service.updateCourse(id, updateDto)).rejects.toThrow(NotFoundException);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } });
+        });
+    });
 
-        mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0])
-        mockPrisma.course.delete.mockResolvedValue(dataCourse[0])
 
-        const result = await service.deleteCourse(id)
+    describe('deleteCourse', () => {
+        const id = "123";
 
-        expect(result).toEqual(dataCourse[0])
-        expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } })
-        expect(mockPrisma.course.delete).toHaveBeenCalledWith({ where: { id } })
-    })
+        it("deve excluir um curso com sucesso", async () => {
+            mockPrisma.course.findUnique.mockResolvedValue(dataCourse[0]);
+            mockPrisma.course.delete.mockResolvedValue(dataCourse[0]);
 
-    // Testa erro ao tentar excluir curso inexistente
-    it("deve lançar erro se tentar excluir curso inexistente", async () => {
-        mockPrisma.course.findUnique.mockResolvedValue(null)
+            const result = await service.deleteCourse(id);
 
-        await expect(service.deleteCourse("id-invalido"))
-            .rejects
-            .toThrow(NotFoundException)
-    })
+            expect(result).toEqual(dataCourse[0]);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } });
+            expect(mockPrisma.course.delete).toHaveBeenCalledWith({ where: { id } });
+        });
+
+        it("deve lançar erro se tentar excluir curso inexistente", async () => {
+            mockPrisma.course.findUnique.mockResolvedValue(null);
+
+            await expect(service.deleteCourse(id)).rejects.toThrow(NotFoundException);
+            expect(mockPrisma.course.findUnique).toHaveBeenCalledWith({ where: { id } });
+        });
+    });
 });

@@ -6,20 +6,28 @@ import {
     Logger,
     Param,
     Post,
-    Put
+    Put,
+    UseGuards
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './Dto/create-course.dto';
 import { UpdateCourseDto } from './Dto/update-course.dto';
-import { ApiTags, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiBasicAuth } from '@nestjs/swagger';
 import { CourseResponseDto } from './Dto/courseresponse.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { alunoGuard } from '../auth/guard/aluno.guard';
+import { adminGuard } from '../auth/guard/admin.guard';
+import { professorGuard } from '../auth/guard/professor.guard';
 
+@UseGuards(JwtAuthGuard)
+@ApiBasicAuth()
 @ApiTags('Cursos')
 @Controller('cursos')
 export class CourseController {
     constructor(private readonly CourseService: CourseService) { }
 
     @Post()
+    @UseGuards(adminGuard, professorGuard)
     @ApiOperation({
         summary: 'Cria um novo curso',
         description: `Cria um curso com os seguintes campos:<br>
@@ -34,7 +42,6 @@ export class CourseController {
     @ApiResponse({ status: 201, description: 'Curso criado com sucesso', type: CourseResponseDto })
     @ApiResponse({ status: 400, description: 'Dados inválidos' })
     async newCourse(@Body() data: CreateCourseDto) {
-        Logger.log(`${JSON.stringify(data)}`);
         return this.CourseService.newCourse(data);
     }
 
@@ -54,7 +61,7 @@ export class CourseController {
         return this.CourseService.oneCourse(id);
     }
 
-    @Get(':name')
+    @Get('buscar-por-nome/:name')
     @ApiOperation({ summary: 'Retorna um curso por nome' })
     @ApiParam({ name: 'name', type: String, description: 'Nome do curso que deseja buscar' })
     @ApiResponse({ status: 200, description: 'Curso encontrado', type: CourseResponseDto })
@@ -64,6 +71,7 @@ export class CourseController {
     }
 
     @Put(':id')
+    @UseGuards(adminGuard, professorGuard)
     @ApiOperation({ summary: 'Atualiza um curso existente por ID' })
     @ApiParam({ name: 'id', type: String, description: 'ID do curso que deseja atualizar' })
     @ApiBody({
@@ -84,6 +92,7 @@ export class CourseController {
     }
 
     @Delete(':id')
+    @UseGuards(adminGuard, professorGuard)
     @ApiOperation({ summary: 'Remove um curso por ID' })
     @ApiParam({ name: 'id', type: String, description: 'ID do curso que deseja remover' })
     @ApiResponse({ status: 200, description: 'Curso removido com sucesso' })

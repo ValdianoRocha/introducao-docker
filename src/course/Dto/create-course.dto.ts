@@ -7,7 +7,7 @@ export class CreateCourseDto {
     @IsString()
     name: string
 
-    @ApiProperty({ example: "Só pra doido!", description: "Descrição do curso de desenvolvomento" })
+    @ApiProperty({ example: "Só pra quem tem paciencia e uma alma boa!", description: "Descrição do curso de desenvolvomento" })
     @IsString()
     @IsOptional()
     description: string
@@ -17,7 +17,7 @@ export class CreateCourseDto {
     @IsPositive()
     workload: number
 
-    @ApiProperty({ example: 0, description: "valor do curso" })
+    @ApiProperty({ example: 1, description: "valor do curso" })
     @IsNumber()
     @IsOptional()
     @IsPositive()
