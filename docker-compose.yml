@@ -1,16 +1,35 @@
-services:
+version: "3.8"
 
+services:
   postgres:
-    image: postgres # a imagem e o que meu conteine vai ter instalado 
-    container_name: introducaodockerdb # nome do conteine 
-    env_file: 
-     - .env
-    environment: # variabel de ambiente 
+    image: postgres:15
+    container_name: introducaodockerdb
+    env_file:
+      - .env
+    environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports: # porta do conteine 
-      - "${PORT_DB}:5432" # nomero da porta de entrada e saida 
-#a porta da esquerda 5432 se der erro pode ser mudada, ja a porta da direita :5432 e padrão
+    ports:
+      - "${PORT_DB}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-    
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: docek-api
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: ${DATABASE_URL_CONTAINER}
+      JWT_SECRET: ${JWT_SECRET}
+    command: sh -c "npx prisma migrate deploy && npm run start:prod"
+
+volumes:
+  postgres_data:

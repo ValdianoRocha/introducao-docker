@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCourseDto } from './Dto/create-course.dto';
 import { UpdateCourseDto } from './Dto/update-course.dto';
+import { courses } from './seed/seed';
 
 @Injectable()
 export class CourseService {
+    private readonly logger = new Logger(CourseService.name);
     constructor(
         private prisma: PrismaService
     ) { }
@@ -85,4 +87,19 @@ export class CourseService {
 
         return this.prisma.course.delete({ where: { id } })
     }
+
+
+    async seedCourses(): Promise<void> {
+        for (const course of courses) {
+            await this.prisma.course.upsert({
+                where: { name: course.name },
+                update: {},
+                create: course,
+            });
+        }
+        this.logger.log("[seedCourses] cursos criados com sucesso.")
+    }
+    // async onModuleInit() {
+    //     await this.seedCourses();
+    // }
 }

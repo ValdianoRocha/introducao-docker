@@ -1,9 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './users.service';
 import { UpdateAuthDto } from '../auth/dto/update-auth.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { adminGuard } from '../auth/guard/admin.guard';
+import { professorGuard } from '../auth/guard/professor.guard';
 
 @Controller('user')
+@UseGuards(JwtAuthGuard, adminGuard, professorGuard)
+@ApiBasicAuth()
 export class UserController {
   constructor(private readonly userService: UserService) { }
 

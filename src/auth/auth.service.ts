@@ -1,28 +1,31 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { loginDto } from './dto/login.dto';
 
+
+const admin: CreateAuthDto = {
+  name: "",
+  address: "",
+  cpf: "",
+  email: "",
+  password: "",
+  date_of_birth: "01-01-2000",
+  phone: ""
+}
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
+
   constructor(
     private jwt: JwtService,
     private prisma: PrismaService,
   ) { }
 
-  /** Responsavel por registar novos alunos 
-   * 
-   * @param studentData {name, phone, email, password, cpf, address, date_of_birth }
-   * @returns 
-   *    {id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        }
-   */
+
   async registerStudent(studentData: CreateAuthDto) {
     let Found = await this.prisma.user.findUnique({
       where: { cpf: studentData.cpf }
@@ -59,7 +62,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email }
     })
-    
+
     if (!user || !user.password) {
       throw new UnauthorizedException('Credenciais Invalidas!')
     }
@@ -87,5 +90,67 @@ export class AuthService {
     return {
       access_token: this.jwt.sign(payload)
     }
+  }
+
+
+  async seedAdmin(): Promise<void> {
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD
+      const existingAdmin = await this.prisma.user.findUnique({
+        where: { email: adminEmail },
+      });
+      if (!adminEmail) throw new NotFoundException
+      if (!adminPassword) throw new NotFoundException
+      
+
+      if (existingAdmin) {
+        this.logger.log('[SeedAdmin] Admin já existe.');
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+      await this.prisma.user.create({
+        data: {
+          ...admin,
+          email: adminEmail,
+          password: hashedPassword, // usar senha criptografada
+          date_of_birth: new Date(admin.date_of_birth), // <-- conversão correta
+          role: "ADMIN"
+        },
+      });
+
+      this.logger.log('[SeedAdmin] Admin criado com sucesso.');
+    } catch (error) {
+      this.logger.error(`Erro ao criar admin seed: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  async onModuleInit() {
+    await this.seedAdmin();
+  }
+
+  async registerTeacher(teacherData: CreateAuthDto){
+    const emailFound = await this.prisma.user.findUnique({
+      where: {email: teacherData.email}
+    })
+    if(emailFound) throw new ConflictException("Email ja cadastrado")
+    
+    const cpfFound = await this.prisma.user.findUnique({
+      where: {cpf: teacherData.cpf}
+    }) 
+    if(cpfFound) throw new ConflictException("CPF ja cadastrado")
+
+    const hashedPassword = await bcrypt.hash(teacherData.password,10)
+
+    const newTeacher =  await this.prisma.user.create({
+      data: {
+        ...teacherData,
+        password: hashedPassword,
+        role: "PROFESSOR"
+      }
+    })
   }
 }

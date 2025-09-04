@@ -3,7 +3,7 @@ import { UserService } from '../users.service';
 import { User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
+import { UpdateAuthDto } from '../../auth/dto/update-auth.dto';
 
 
 const mockPrisma = {
@@ -16,7 +16,7 @@ const mockPrisma = {
 
 }
 
-const userDb: User[] = [{
+export const userDb: User[] = [{
   id: "id-1",
   name: "nome",
   address: "endereço",
