@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../users.controller';
 import { UserService } from '../users.service';
 import { User } from '@prisma/client';
-import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
+import { UpdateAuthDto } from '../../auth/dto/update-auth.dto';
 
 const mockService = {
   findAll: jest.fn(),
