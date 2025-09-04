@@ -21,78 +21,138 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# 📘 API de Gerenciamento Educacional
+## 📌 Sobre o Projeto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Esta API foi desenvolvida com o objetivo de gerenciar usuários, autenticação e cursos dentro de um sistema educacional.
+Ela fornece endpoints que permitem registro, login, listagem, busca, atualização e exclusão de usuários e cursos, garantindo um fluxo seguro e organizado.
 
-## Project setup
+# 📦 Pré-requisitos :
+
+Antes de iniciar o projeto, é necessário ter algumas ferramentas instaladas no seu computador. Elas são essenciais para o funcionamento da aplicação e para que você possa executá-la localmente.
+
+### 🔧 Git :
+
+O Git é um sistema de controle de versão. Ele permite que você clone (copie) o projeto do repositório remoto para a sua máquina e também contribua com atualizações no código.
+
+- 🔗 Baixar: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+- 📥 Após a instalação, verifique se está funcionando corretamente:
+  ```bash
+  git --version
+
+<!-- - Esse e nosso repositório no git 
+ - [Git](https://github.com/amontada-valley/squad-02-amotur-backend) -->
+ ## 📁 Repositório do projeto:
+https://github.com/ValdianoRocha/introducao-docker
+
+
+## 🐳 Instalando Docker.
+O Docker é uma plataforma que permite criar containers — ambientes isolados que contêm tudo o que seu projeto precisa para rodar (linguagem, dependências, banco de dados, etc.).
+
+No nosso caso, usamos o Docker para rodar tanto o banco de dados quanto a própria aplicação de forma automatizada e independente do seu sistema operacional.
+
+🧭 Passos para instalar:
+Acesse o site do Docker:
+
+- [Docker e Docker Compose](https://www.docker.com/get-started)
+
+Baixe a versão compatível com o seu sistema operacional:
+
+Windows (com WSL2 habilitado)
+
+macOS (Intel ou Apple Silicon)
+
+Linux (use o gerenciador de pacotes da sua distribuição)
+
+Siga o processo de instalação da interface do Docker Desktop.
+
+Após instalar, reinicie o computador se necessário e abra o Docker Desktop para garantir que está rodando corretamente.
+
+Para confirmar se está tudo funcionando, execute os comandos no terminal:
+
+```bash
+$ docker --version
+$ docker compose version
+```
+
+
+# 🚀 Funcionalidades
+## 🔑 Autenticação (Auth)
+
+- Registro de estudantes e professores
+- Login seguro com validação de credenciais
+
+## 👥 Usuários (User)
+
+- Listagem de todos os usuários cadastrados
+- Consulta individual por CPF
+- Atualização e exclusão de usuários pelo CPF
+
+## 📚 Cursos (Cursos)
+
+- Criação de novos cursos
+- Listagem de cursos cadastrados
+- Consulta por ID ou nome
+- Atualização e exclusão de cursos
+
+## 🛠️ Tecnologias Utilizadas
+
+- Node.js
+- NestJS
+- Prisma (ORM)
+- Swagger (documentação da API)
+- PostgreSQL
+
+
+## 📦 Clone.
+```bash
+$ git clone git@github.com:ValdianoRocha/introducao-docker.git
+```
+
+## 📥 Instalando as dependências.
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+## 📦 Criar um .env:
+```bash
+$ cp .env.example .env
+```
+- Preencha os campos corretamente.
+
+## 🧬 Inicializando o Prisma.
+```bash
+$ npx prisma migrate dev --name [new_name]
+$ npx prisma generate
+```
+
+## 🔼 Subindo os containers com Docker Compose.
+- O Docker deve estar iniciado.
+```bash
+$ docker compose up --build -d
+```
+
+## 🚀 Iniciando a API.
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
+- Caso se der um erro na porta (localhost:3333), vc vai ate o arquivo docker-compose.yml, mude a porta do lado esquerdo, depois va no .env na (URL) e mude a porta para a mesma.
 
-## Run tests
-
+- Depois use o comando: 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ docker compose down
+$ docker compose up -d
 ```
 
-## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+A API estará disponível em: http://localhost:3333
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🧪 Teste e Documentação.
+A API está documentada com Swagger, permitindo fácil exploração dos endpoints diretamente pelo navegador.
+http://localhost:3333/api
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+# 📌 Status do Projeto
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+✅ Em desenvolvimento contínuo.

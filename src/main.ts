@@ -18,8 +18,9 @@ async function bootstrap() {
 
 
   const config = new DocumentBuilder()
-    .setTitle('Minha API')
-    .setDescription('Documentação da API em que estamos estudando Docker e NestJS.')
+    .setTitle('Sistema Educacional – API para Gestão de Estudantes, Professores e Cursos')
+    .setDescription(`Documentação que apresenta os endpoints da API desenvolvida para gerenciamento de autenticação, usuários e cursos.<br>
+      Através dela é possível registrar estudantes e professores, realizar login, além de consultar, atualizar e remover informações de usuários e cursos de forma prática e organizada.`)
     .setVersion('1.0')
     .addBasicAuth({   // REPRESENTA OS CAMPOS AUTENTICADOS
       // esquema jwt bearer
